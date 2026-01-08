@@ -37,10 +37,33 @@ wordcloud = WordCloud(stopwords=stopwords, background_color="white").generate(te
 plt.figure( figsize=(15,10))
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
-plt.show()text = " ".join(i for i in data.text)
+plt.show()
+text = " ".join(i for i in data.text);
+
 stopwords = set(STOPWORDS)
 wordcloud = WordCloud(stopwords=stopwords, background_color="white").generate(text)
 plt.figure( figsize=(15,10))
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
 plt.show()
+
+nltk.download('vader_lexicon')
+sentiments = SentimentIntensityAnalyzer()
+data["Positive"] = [sentiments.polarity_scores(i)["pos"] for i in data["text"]]
+data["Negative"] = [sentiments.polarity_scores(i)["neg"] for i in data["text"]]
+data["Neutral"] = [sentiments.polarity_scores(i)["neu"] for i in data["text"]]
+data = data[["text", "Positive", "Negative", "Neutral"]]
+print(data.head())
+
+x = sum(data["Positive"])
+y = sum(data["Negative"])
+z = sum(data["Neutral"])
+
+def sentiment_score(a, b, c):
+    if (a>b) and (a>c):
+        print("Positive 😊 ")
+    elif (b>a) and (b>c):
+        print("Negative 😠 ")
+    else:
+        print("Neutral 🙂 ")
+sentiment_score(x, y, z)
